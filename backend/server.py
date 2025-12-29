@@ -12,7 +12,6 @@ import http.server
 import socketserver
 import json
 import os
-import cgi
 from urllib.parse import urlparse
 from pathlib import Path
 from threading import Lock
