@@ -17,7 +17,6 @@ from pathlib import Path
 from threading import Lock
 
 PORT = int(os.environ.get("PORT", 8000))
-app.run(host="0.0.0.0", port=port)
 ROOT = Path(__file__).resolve().parent
 FRONTEND_DIR = (ROOT.parent / "frontend").resolve()
 DATA_DIR = ROOT / "data"
