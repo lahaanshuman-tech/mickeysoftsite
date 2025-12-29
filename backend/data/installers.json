@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "name": "Billing Pro (exe)",
+    "desc": "The best billing software.",
+    "github_url": "https://github.com/lahaanshuman-tech/AL-installers/releases/tag/v1.23.0"
+  },
+  {
+    "id": 2,
+    "name": "Billing Pro (msi)",
+    "desc": "The best billing software.",
+    "github_url": "https://github.com/lahaanshuman-tech/AL-installers/releases/tag/"
+  },
+  {
+    "id":3,
+    "name": "CodePad",
+    "desc": "The advanced code editor.",
+    "github_url": "https://github.com/lahaanshuman-tech/AL-installers/releases/tag/v1.02.0"
+  },
+  {
+   "id":4,
+   "name": "Glass Quote Pro (exe)",
+   "desc": "The advanced glass quote software.",
+   "github_url": "https://github.com/lahaanshuman-tech/AL-installers/releases/tag/v3.09.1"
+  },
+  {
+   "id":5,
+   "name": "Glass Quote Pro (msi)",
+   "desc": "The advanced glass quote software",
+   "github_url": "https://github.com/lahaanshuman-tech/AL-installers/releases/tag/v3.09.1"
+  },
+  {
+   "id":6,
+   "name": "Aether Code Sign (exe)",
+   "desc": "The most secure code signing software",
+   "github_url": "http://192.168.29.222:"
+  },
+  {
+    "id":7,
+    "name":"Inventory Manager App",
+    "desc": "A very organised app to keep tract of what things you have",
+    "github_url": "https://github.com/lahaamshuman-tech/AL-installers/releases/tag/v2.45.0"
+  },
+  {
+    "id":8,
+    "name": "Concorde Student Development Kit(CSDK)",
+    "desc": "A new friendly coding languages for students.",
+    "github_url":"https://github.com/lahaanshuman-tech/Concorde-SDK/releases/tag/v1.30.25"
+  }
+ ]

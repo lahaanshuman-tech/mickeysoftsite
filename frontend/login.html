@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Login — MickeySoft</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+  <div class="container narrow card auth">
+    <div class="auth-left">
+      <img src="assets/logo.png" class="logo-lg" alt="logo" height="130" width="130">
+      <h2>Welcome back</h2>
+      <p class="muted">Admin login or users can login (admin gets the dashboard).</p>
+    </div>
+    <div class="auth-right">
+      <label>Email</label>
+      <input id="email" class="input" placeholder="you@example.com">
+      <label>Password</label>
+      <input id="password" type="password" class="input" placeholder="password">
+      <div class="row">
+        <button id="btnLogin" class="btn">Login</button>
+        <a href="register.html" class="link">Create account</a>
+      </div>
+      <div id="msg" class="muted"></div>
+    </div>
+  </div>
+
+<script>
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "adminms123";
+
+document.getElementById('btnLogin').addEventListener('click', async () => {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const res = await fetch('/api/login', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({email, password})
+  });
+  const j = await res.json();
+  if (j.ok) {
+    if (j.admin) {
+      localStorage.setItem('isAdmin','1');
+      localStorage.setItem('adminUser', ADMIN_USERNAME);
+      localStorage.setItem('adminPass', ADMIN_PASSWORD);
+      location.href = 'admin.html';
+    } else {
+      localStorage.setItem('user', j.email);
+      location.href = 'index.html';
+    }
+  } else {
+    document.getElementById('msg').innerText = j.error || 'Login failed';
+  }
+});
+</script>
+</body>
+</html>

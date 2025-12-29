@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Customer Care — MickeySoft</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+  <div class="container narrow card">
+    <h2>Customer Care</h2>
+    <label>Email</label>
+    <input id="email" class="input" placeholder="you@example.com">
+    <label>Subject</label>
+    <input id="subject" class="input">
+    <label>Message</label>
+    <textarea id="message" class="input" rows="5"></textarea>
+    <div class="row">
+      <button id="btnTicket" class="btn">Submit Ticket</button>
+      <a href="index.html" class="link">Back</a>
+    </div>
+    <div id="msg" class="muted"></div>
+  </div>
+
+<script>
+document.getElementById('btnTicket').addEventListener('click', async () => {
+  const payload = {
+    email: document.getElementById('email').value.trim(),
+    subject: document.getElementById('subject').value.trim(),
+    message: document.getElementById('message').value.trim()
+  };
+  const res = await fetch('/api/tickets', {
+    method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+  });
+  const j = await res.json();
+  if (j.ok) {
+    alert('Ticket submitted');
+    location.href = 'index.html';
+  } else {
+    document.getElementById('msg').innerText = j.error || 'Error';
+  }
+});
+</script>
+</body>
+</html>

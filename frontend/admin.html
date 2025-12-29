@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Admin Dashboard — MickeySoft</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+  <div class="container">
+    <header class="page-header">
+      <img src="assets/logo.png" class="logo-sm">
+      <h2>Admin Dashboard</h2>
+    </header>
+
+    <div class="card">
+      <div class="row between">
+        <div class="tabs">
+          <button data-tab="installers" class="tab active">Installers</button>
+          <button data-tab="requests" class="tab">Requests</button>
+          <button data-tab="tickets" class="tab">Tickets</button>
+          <button data-tab="orders" class="tab">Orders</button>
+          <button data-tab="users" class="tab">Users</button>
+        </div>
+        <div>
+          <input id="file" type="file" style="display:inline-block">
+          <input id="iname" class="input small" placeholder="Installer name" style="width:220px">
+          <button id="btnUpload" class="btn">Upload</button>
+          <button id="btnLogout" class="btn ghost">Logout</button>
+        </div>
+      </div>
+
+      <div id="panel" class="tab-panel">
+        <!-- Content loaded here by JS -->
+      </div>
+    </div>
+  </div>
+
+<script>
+// --- Admin Credentials (Hardcoded values matching server.py) ---
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "adminms123";
+// ----------------------------------------------------------------
+
+// --- Custom Notification Function (Replaces alert()) ---
+function showNotification(message, isError = false) {
+  let note = document.getElementById('notification');
+  if (!note) {
+    note = document.createElement('div');
+    note.id = 'notification';
+    note.className = 'notification-box';
+    document.body.appendChild(note);
+  }
+  note.textContent = message;
+  note.style.backgroundColor = isError ? '#f44336' : '#4CAF50';
+  note.classList.add('show');
+  setTimeout(() => {
+    note.classList.remove('show');
+  }, 3000);
+}
+// -------------------------------------------------------
+
+function checkAuth(){
+  if (localStorage.getItem('isAdmin') !== '1') {
+    location.href = 'login.html';
+  }
+}
+
+async function load(name){
+  const panel = document.getElementById('panel');
+  panel.innerHTML = '<div class="notice">Loading...</div>';
+
+  if (name === 'installers') {
+    const res = await fetch('/api/installers'); const j = await res.json();
+    if (j.ok) {
+        panel.innerHTML = '<pre class="muted">'+JSON.stringify(j.installers || [], null, 2)+'</pre>';
+    } else {
+        panel.innerHTML = '<div class="notice error">Error loading installers.</div>';
+    }
+    return;
+  }
+  if (name === 'requests') {
+    const res = await fetch('/api/requests'); const j = await res.json();
+    panel.innerHTML = '<pre class="muted">'+JSON.stringify(j.requests || [], null, 2)+'</pre>';
+    return;
+  }
+  if (name === 'tickets') {
+    const res = await fetch('/api/tickets'); const j = await res.json();
+    panel.innerHTML = '<pre class="muted">'+JSON.stringify(j.tickets || [], null, 2)+'</pre>';
+    return;
+  }
+  if (name === 'orders') {
+    const res = await fetch('/api/orders'); const j = await res.json();
+    panel.innerHTML = '<pre class="muted">'+JSON.stringify(j.orders || [], null, 2)+'</pre>';
+    return;
+  }
+  if (name === 'users') {
+    const res = await fetch('/api/users'); const j = await res.json();
+    panel.innerHTML = '<pre class="muted">'+JSON.stringify(j.users || [], null, 2)+'</pre>';
+    return;
+  }
+}
+
+document.querySelectorAll('.tab').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+    load(e.target.dataset.tab);
+  });
+});
+
+document.getElementById('btnUpload').addEventListener('click', async () => {
+  const f = document.getElementById('file').files[0];
+  if (!f) { 
+    showNotification('Pick a file to upload.', true); 
+    return; 
+  }
+  
+  const fd = new FormData();
+  fd.append('file', f);
+  fd.append('name', document.getElementById('iname').value || f.name);
+  fd.append('desc', '');
+  
+  // --- The fix: Ensure credentials are sent with every upload ---
+  fd.append('admin', 'true');
+  fd.append('username', ADMIN_USERNAME);
+  fd.append('password', ADMIN_PASSWORD);
+  // -------------------------------------------------------------
+  
+  const res = await fetch('/upload', {
+    method: 'POST',
+    body: fd
+  });
+  const j = await res.json();
+  
+  if (j.ok) {
+    showNotification(`File uploaded: ${j.installer.name}`);
+    document.getElementById('file').value = ''; // Clear file input
+    document.getElementById('iname').value = ''; // Clear name input
+    load('installers'); // Reload installers tab
+  } else {
+    showNotification(`Upload failed: ${j.error || 'Unknown error'}`, true);
+  }
+});
+
+document.getElementById('btnLogout').addEventListener('click', () => {
+  localStorage.clear();
+  location.href = 'login.html';
+});
+
+// Initial Load
+checkAuth();
+load('installers');
+</script>
+
+<style>
+/* Style for the custom notification box (Ensure this is in your app.css or included) */
+.notification-box {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #4CAF50; /* Green */
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+.notification-box.show {
+  opacity: 1;
+  visibility: visible;
+}
+.notification-box[style*="f44336"] {
+    background-color: #f44336; /* Red for errors */
+}
+</style>
+</body>
+</html>

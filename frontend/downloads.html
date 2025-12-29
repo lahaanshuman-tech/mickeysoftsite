@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Downloads — MickeySoft</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+  <div class="container">
+    <header class="page-header">
+      <img src="assets/logo.png" class="logo-sm">
+      <h2>Available Software</h2>
+    </header>
+
+    <div id="list" class="cards"></div>
+  </div>
+
+  <script>
+    async function loadInstallers() {
+      try {
+        const res = await fetch('/api/installers');
+        const data = await res.json();
+    
+        // FIX #2 — DEBUG: see exactly what backend sends
+        console.log("INSTALLERS RESPONSE:", data);
+    
+        const installers = data.installers || [];
+        const container = document.getElementById('list');
+    
+        if (!installers.length) {
+          container.innerHTML =
+            '<div class="notice">No software available right now.</div>';
+          return;
+        }
+    
+        container.innerHTML = installers.map(it => `
+          <div class="card soft">
+            <div class="row between">
+              <div>
+                <strong>${it.name}</strong>
+                <div class="muted">${it.desc || ''}</div>
+              </div>
+              <div>
+                <button class="btn"
+                  onclick="downloadSoftware(${it.id}, '${it.github_url}')">
+                  Get Software
+                </button>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      } catch (err) {
+        alert("Failed to load software list");
+        console.error(err);
+      }
+    }
+    
+    async function downloadSoftware(installerId, githubUrl) {
+      const email =
+        localStorage.getItem('user_email') ||
+        prompt('Enter your email to continue:');
+    
+      if (!email) return;
+    
+      localStorage.setItem('user_email', email);
+    
+      try {
+        const res = await fetch('/api/order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: email,
+            installer_id: installerId
+          })
+        });
+    
+        const data = await res.json();
+    
+        // FIX #3 — SAFE REDIRECT
+        if (data.ok === true) {
+          if (!githubUrl) {
+            alert("Download link missing");
+            console.error("githubUrl is:", githubUrl);
+            return;
+          }
+          window.location.assign(githubUrl);
+        } else {
+          alert(data.error || 'Order failed');
+        }
+      } catch (err) {
+        alert('Server error. Try again.');
+        console.error(err);
+      }
+    }
+    
+    // Load installers when page opens
+    loadInstallers();
+</script>
+    
+</body>
+</html>

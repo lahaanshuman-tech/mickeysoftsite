@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Register — MickeySoft</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="assets/app.css">
+</head>
+<body>
+  <div class="container narrow card auth">
+    <div class="auth-left">
+      <img src="assets/logo.png" class="logo-lg" alt="logo" height="130" width="130">
+      <h2>Create account</h2>
+      <p class="muted">Sign up to record orders and downloads on this LAN hub.</p>
+    </div>
+    <div class="auth-right">
+      <label>Name</label>
+      <input id="name" class="input" placeholder="Your name">
+      <label>Email</label>
+      <input id="email" class="input" placeholder="you@example.com">
+      <label>Password</label>
+      <input id="password" type="password" class="input">
+      <div class="row">
+        <button id="btnCreate" class="btn">Register</button>
+        <a href="login.html" class="link">Back to login</a>
+      </div>
+      <div id="msg" class="muted"></div>
+    </div>
+  </div>
+
+<script>
+document.getElementById('btnCreate').addEventListener('click', async () => {
+  const payload = {
+    name: document.getElementById('name').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    password: document.getElementById('password').value.trim()
+  };
+  const res = await fetch('/api/register', {
+    method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+  });
+  const j = await res.json();
+  if (j.ok) {
+    alert('Registered. Please login.');
+    location.href = 'login.html';
+  } else {
+    document.getElementById('msg').innerText = j.error || 'Error';
+  }
+});
+</script>
+</body>
+</html>
